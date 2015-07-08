@@ -1,0 +1,34 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+.musics-table {
+  width: 100%;
+}
+.player-header {
+  background-color: lightblue;
+}
+.player-header .player-btn {
+  background: rgba(15, 76, 174, 0.4);
+}
+.mdl-data-table--selectable th:first-of-type {
+  width: 25px;
+}
+#player-progress-wrapp {
+  height: 100%
+  display: table;
+  width: 40em;
+}
+#player-progress-wrapp .vertical-center {
+  display: block;
+  vertical-align: middle;
+}
+#player-progress-wrapp #player-progress-container {
+  padding-left: 20px;
+  display: block;
+  vertical-align: middle;
+}
+#player-progress-wrapp #player-progress-hover-container {
+  display: block;
+  vertical-align: middle;
+}
