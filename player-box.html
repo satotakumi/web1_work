@@ -1,0 +1,133 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-icons/av-icons.html">
+<link rel="import" href="bower_components/iron-iconset/iron-iconset.html">
+<link rel="import" href="bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="bower_components/paper-material/paper-material.html">
+<link rel="import" href="bower_components/google-youtube/google-youtube.html">
+
+<dom-module id="yt-player">
+  <style is="custom-style">
+    .horizontal-section {
+      min-width: 200px;
+    }
+
+    paper-fab {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    paper-fab.blue {
+      --paper-fab-background: var(--paper-light-blue-500);
+      --paper-fab-keyboard-focus-background: var(--paper-light-blue-900);
+    }
+
+    paper-fab.red {
+      --paper-fab-background: var(--paper-red-500);
+      --paper-fab-keyboard-focus-background: var(--paper-red-900);
+    }
+
+    paper-fab.green {
+      --paper-fab-background: var(--paper-green-500);
+      --paper-fab-keyboard-focus-background: var(--paper-green-900);
+    }
+
+    paper-fab.orange {
+      --paper-fab-background: var(--paper-orange-500);
+      --paper-fab-keyboard-focus-background: var(--paper-orange-900);
+    }
+  </style>
+  <template>
+    <google-youtube id="googleYouTube"
+                    playsupported="{{playSupported}}"
+                    video-id="F5bIdqZHEOo"
+                    state="{{state}}"
+                    currenttime="{{currentTime}}"
+                    currenttimeformatted="{{currentTimeFormatted}}"
+                    duration="{{duration}}"
+                    durationformatted="{{durationFormatted}}"
+                    fractionloaded="{{fractionLoaded}}"
+                    on-google-youtube-state-change="handleStateChange"
+                    on-google-youtube-error="handleYouTubeError">
+    </google-youtube>
+    <div id="player-wrapp">
+      <paper-slider value="{{computeProgress(currentTime, duration)}}" role="slider" tabindex="0" aria-disabled="false" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" step="0.01" class="x-scope paper-slider-0"></paper-slider>
+      <div id="player-inner">
+        <paper-fab mini icon="av:play-arrow" class="orange" id="playerPlayCtl" on-click="togglePlay"></paper-fab>
+      </div>
+    </div>
+
+
+  </template>
+
+  <script type="text/javascript">
+
+    window.onload = function() {
+
+      var yt_player, play_ctl_btn;
+      play_ctl_btn = document.querySelector('#player-play-ctl');
+      yt_player = document.querySelector('google-youtube');
+
+
+      Polymer({
+        is: "yt-player",
+        properties: {
+          playSupported: String,
+          state: String,
+          currentTime: Number,
+          currentTimeFormatted: String,
+          duration: Number,
+          durationFormatted: String,
+          fractionLoaded: Number,
+          events: {
+            type: Array,
+            value: []
+          }
+        },
+        computeProgress: function(currentTime, duration) {
+          return currentTime / duration * 100;
+        },
+        computePlayDisabled: function(state, playSupported) {
+          return state == 1 || state == 3 || !playSupported;
+        },
+        computePauseDisabled: function(state) {
+          return state != 1 && state != 3;
+        },
+        handleStateChange: function(ev) {
+          this.events.push({data: ev.detail.data});
+        },
+        handleYouTubeError: function(ev) {
+          console.error('YouTube playback error', ev.detail);
+        },
+        handlePlayVideo: function(ev) {
+          this.$.googleYouTube.play();
+          this.$.playerPlayCtl.icon = 'av:pause';
+        },
+        handlePauseVideo: function(ev) {
+          this.$.googleYouTube.pause();
+          this.$.playerPlayCtl.icon = 'av:play-arrow';
+        },
+        handleCueVideo: function(ev) {
+          this.$.googleYouTube.videoid = this.$.videoId.value;
+        },
+        togglePlay: function(ev) {
+          console.log(this.$.googleYouTube.state);
+          if (this.$.googleYouTube.state == 1 ){
+            this.$.googleYouTube.pause();
+            this.$.playerPlayCtl.icon = 'av:play-arrow'
+          }else{
+            console.log("START");
+            this.$.googleYouTube.play();
+            this.$.playerPlayCtl.icon = 'av:pause';
+          }
+        }
+      });
+
+      document.querySelector('#player-wrapp').addEventListener('mouseover', function(){ document.querySelector('paper-slider').$.sliderKnob.hidden = false });
+      document.querySelector('#player-wrapp').addEventListener('mouseout', function(){ document.querySelector('paper-slider').$.sliderKnob.hidden = true });
+      document.querySelector('paper-slider').$.sliderKnob.hidden = true;
+    }
+  </script>
+</dom-module>
