@@ -19,6 +19,7 @@
     "iron-icons": "PolymerElements/iron-icons#~1.0.3",
     "paper-fab": "PolymerElements/paper-fab#~1.0.2",
     "google-youtube": "GoogleWebComponents/google-youtube#~1.1.2",
-    "iron-iconset": "PolymerElements/iron-iconset#~1.0.2"
+    "iron-iconset": "PolymerElements/iron-iconset#~1.0.2",
+    "iron-list": "PolymerElements/iron-list#~1.0.0"
   }
 }
