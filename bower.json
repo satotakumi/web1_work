@@ -22,6 +22,7 @@
     "iron-iconset": "PolymerElements/iron-iconset#~1.0.2",
     "iron-list": "PolymerElements/iron-list#~1.0.0",
     "iron-ajax": "PolymerElements/iron-ajax#~1.0.2",
-    "paper-toolbar": "PolymerElements/paper-toolbar#~1.0.2"
+    "paper-toolbar": "PolymerElements/paper-toolbar#~1.0.2",
+    "paper-item": "PolymerElements/paper-item#~1.0.2"
   }
 }
