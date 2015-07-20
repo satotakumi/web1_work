@@ -3,10 +3,12 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css" media="screen" title="no title" charset="utf-8">
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+
     <link rel="import" href="bower_components/polymer/polymer.html">
     <!-- Import element -->
-    <link rel="import" href="player-box.html">
+    <link rel="import" href="ie-player-box.html">
 
     <title>Musicer - Youtube Music Player</title>
 
@@ -23,11 +25,11 @@
         padding: 0.3em;
       }
 
-      #player-wrapp #plySlider {
+      #player-wrapp paper-slider {
         position: absolute;
         top: -15px;
-        left: 74px;
-        width: calc(100% - 65px);
+        left: -16px;
+        width: 100%;
       }
       #player-wrapp google-youtube {
         position: absolute;
@@ -35,7 +37,6 @@
         left: 0;
 
       }
-
       paper-item{
         position: relative;
       }
@@ -50,6 +51,7 @@
     </style>
   </head>
   <body>
+
     <yt-player></yt-player>
     <script>
       var deleteLink = document.querySelectorAll('paper-item');

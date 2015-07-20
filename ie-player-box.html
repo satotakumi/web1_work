@@ -5,20 +5,14 @@
 <link rel="import" href="bower_components/iron-iconset/iron-iconset.html">
 <link rel="import" href="bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="bower_components/iron-list/iron-list.html">
-<link rel="import" href="bower_components/iron-image/iron-image.html">
-<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="bower_components/google-youtube/google-youtube.html">
 <link rel="import" href="bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="bower_components/paper-material/paper-material.html">
 <link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="bower_components/paper-item/paper-item-body.html">
-<link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/paper-ripple/paper-ripple.html">
-<link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
-<link rel="import" href="bower_components/neon-animation/neon-animation.html">
-
-<link rel="import" href="animated-dropdown.html">
 
 <dom-module id="yt-player">
   <style is="custom-style">
@@ -26,11 +20,6 @@
       min-width: 200px;
     }
 
-    .yt-ply-list {
-      width: 80%;
-      margin: 20px auto;
-      margin-bottom: 70px;
-    }
     paper-fab {
       display: block;
       margin-left: auto;
@@ -60,58 +49,36 @@
     #player-wrapp {
       background-color: #fff
     }
-
-    #playerVolumeBox {
-      position: absolute;
-      top: calc(50% - 15px);
-      right: 2%;
-    }
-
-    @media screen and (max-width: 960px) {
-       /* 表示領域が320px以下の場合に適用するスタイル */
-       .yt-ply-list {
-         width: 100%;
-         top 15px;
-         margin: 0;
-       }
-    }
   </style>
   <template>
-    <paper-toolbar>
-      <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
-      <div class="title">{{title}}</div>
-      <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
-    </paper-toolbar>
-    <!-- Musics List -->
-    <paper-material elevation="1" class="yt-ply-list">
+    <paper-material elevation="1" style="width:100%;">
         <template is="dom-repeat" id="menu" items="{{musics}}">
           <paper-item yt-id$="{{item.id}}" on-click="listclick">
             <div class="musi-thumb">
-              <iron-image style="width:60px; height:60px;" sizing="cover" src$="{{item.thumb}}"></iron-image>
+              <iron-image style="width:60px; height:60px;" sizing="cover" src$="http://i.ytimg.com/vi/{{item.id}}/default.jpg"></iron-image>
               <!-- <iron-icon icon="warning"></iron-icon> -->
             </div>
             <paper-item-body two-line>
               <div>{{item.name}}</div>
+              <div secondary>Your status is visible to everyone</div>
             </paper-item-body>
-            <div>
-              <paper-button on-click="handleEditList" noink><iron-icon icon="icons:menu" dropdown-id="dropdown" ></iron-icon></paper-button>
-              <animated-dropdown id="dropdown" class="x-scope animated-dropdown-0">
-                <paper-menu style="width: 100px;position: fixed">
-                  <paper-item>Item 1</paper-item>
-                  <paper-item>Item 2</paper-item>
-                </paper-menu>
-              </animated-dropdown>
-            </div>
+            <div>3:42</div>
           </paper-item>
         </template>
-        <paper-item>
-          <paper-input label="YouTubeID" id="addYtVideoID"></paper-input>
-          <paper-fab icon="add" on-click="addClick"></paper-fab>
-        </paper-item>
+      <!-- yeah -->
+      <paper-item yt-id="Kd7-baNMIF8" on-click="listclick">
+        <div class="musi-thumb">
+          <img src="http://i.ytimg.com/vi/Kd7-baNMIF8/default.jpg" alt="" />
+          <!-- <iron-icon icon="warning"></iron-icon> -->
+        </div>
+        <paper-item-body two-line>
+          <div>Show your status</div>
+          <div secondary>Your status is visible to everyone</div>
+        </paper-item-body>
+        <div> 3: 24</div>
+      </paper-item>
     </paper-material>
-    <!-- Music List End -->
 
-    <!-- Player Ctrl -->
     <div id="player-wrapp">
       <google-youtube id="googleYouTube"
                       width="90px"
@@ -124,35 +91,20 @@
                       duration="{{duration}}"
                       durationformatted="{{durationFormatted}}"
                       fractionloaded="{{fractionLoaded}}"
-                      on-google-youtube-ready="handleYoutubeReady"
                       on-google-youtube-state-change="handleStateChange"
                       on-google-youtube-error="handleYouTubeError"
                       chromeless = true>
       </google-youtube>
-      <paper-slider id="plySlider" value="{{computeProgress(currentTime, duration)}}" role="slider" tabindex="0" aria-disabled="false" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" step="0.01" class="x-scope paper-slider-0" on-change="handleSliderChange"></paper-slider>
+      <paper-slider value="{{computeProgress(currentTime, duration)}}" role="slider" tabindex="0" aria-disabled="false" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" step="0.01" class="x-scope paper-slider-0"></paper-slider>
       <div id="player-inner">
         <paper-fab mini icon="av:play-arrow" class="orange" id="playerPlayCtl" on-click="togglePlay"></paper-fab>
       </div>
-      <div id="playerVolumeBox">
-        <iron-icon icon="av:volume-up" style="vertical-align: super;color: gray;"></iron-icon>
-        <paper-slider id="volumeSlider" on-change="hadleVolumeChange"></paper-slider>
-      </div>
     </div>
-    <!-- Player Ctrl -->
-
-    <!-- Background -->
-    <iron-ajax
-        id="getYtData"
-        url="https://www.googleapis.com/youtube/v3/videos"
-        params='{"part":"snippet", "id":"UWVNlBSCC20","key":"AIzaSyB8OVZFyX3ZVd5HOjHu3xc1wnz6rqyemMo"}'
-        handle-as="json"
-        on-response="handleResponse"
-        debounce-duration="300"></iron-ajax>
   </template>
 
   <script type="text/javascript">
-
     window.addEventListener('WebComponentsReady', function(e) {
+
 
       var yt_player, play_ctl_btn;
       play_ctl_btn = document.querySelector('#player-play-ctl');
@@ -169,7 +121,6 @@
           duration: Number,
           durationFormatted: String,
           fractionLoaded: Number,
-          title: String,
           events: {
             type: Array,
             value: []
@@ -178,31 +129,13 @@
             type: Array
           }
         },
-        handleResponse: function(request){
-          console.log(request.detail.response);
-          if (request.detail.response.items.length){
-            console.log(request.detail.response.items[0].title);
-            var res_data = request.detail.response.items[0];
-            var tmp_ary = { name: res_data.snippet.title, id: res_data.id, thumb: res_data.snippet.thumbnails.default.url };
-            this.push('musics', tmp_ary);
-            window.localStorage.setItem('musics',JSON.stringify(this.musics));
-          }else{
-            console.log("NOT FOUND.")
-          }
-        },
         ready: function() {
-          if (window.localStorage.getItem('musics')) {
-            this.musics = JSON.parse(window.localStorage.getItem('musics'));
-          }else{
-            this.musics = [
-                { name: "Every Little Thing / 「ANATA TO」MUSIC VIDEO＋SPOT映像", id: "HQkpn0o39Vc", thumb: "http://i.ytimg.com/vi/HQkpn0o39Vc/default.jpg" },
-                { name: "Every Little Thing / 「いいかえれば」リリックビデオ", id: "UWVNlBSCC20", thumb: "http://i.ytimg.com/vi/UWVNlBSCC20/default.jpg" },
-                { name: "Family Force 5 - Chainsaw Official Music Video (Feat. Tedashii)", id: "qdJicpjitMM", thumb: "http://i.ytimg.com/vi/qdJicpjitMM/default.jpg"  },
-                { name: "Family Force 5 - This Is My Year (Matoma Remix) Official Video", id: "NzVev-25Y3c", thumb: "http://i.ytimg.com/vi/NzVev-25Y3c/default.jpg"  },
-                { name: "saqwz - Bird Go !", id: "Kd7-baNMIF8", thumb: "http://i.ytimg.com/vi/Kd7-baNMIF8/default.jpg"  },
-            ];
-            window.localStorage.setItem('musics',JSON.stringify(this.musics));
-          }
+          this.musics = [
+              { name: "Every Little Thing / 「ANATA TO」MUSIC VIDEO＋SPOT映像", id: "HQkpn0o39Vc" },
+              { name: "Pasta", ordered: 0 },
+              { name: "Toast", ordered: 0 }
+          ];
+          console.log(this.musics)
         },
         computeProgress: function(currentTime, duration) {
           return currentTime / duration * 100;
@@ -237,9 +170,6 @@
         handleCueVideo: function(ev) {
           this.$.googleYouTube.videoid = this.$.videoId.value;
         },
-        handleYoutubeReady: function(ev) {
-          document.querySelector('#volumeSlider').value = this.$.googleYouTube._player.getVolume();
-        },
         togglePlay: function(ev) {
           if (this.$.googleYouTube.state == 1 ){
             this.$.googleYouTube.pause();
@@ -249,28 +179,10 @@
             this.$.playerPlayCtl.icon = 'av:pause';
           }
         },
-        listclick: function(ev) {
-          this.title = ev.model.item.name;
-          console.log(ev.model)
-          this.$.googleYouTube.videoId = ev.target.parentNode.getAttributeNode("yt-id").value;
+        listclick: function(ytid) {
+          console.log(ytid)
+          this.$.googleYouTube.videoId = ytid.toElement.parentNode.getAttributeNode("yt-id").value;
           this.$.googleYouTube.play()
-        },
-        addClick: function(ev) {
-          this.$.getYtData.params.id = this.$.addYtVideoID.value;
-          this.$.getYtData.generateRequest();
-        },
-        handleSliderChange: function(ev) {
-          this.$.googleYouTube.seekTo(this.$.googleYouTube.duration * (this.$.plySlider.value/100))
-        },
-        handleEditList: function(ev) {
-          console.log(ev.target)
-          var dropdown = document.querySelector('#' + ev.target.getAttribute('dropdown-id'));
-          if (dropdown) {
-            dropdown.show();
-          }
-        },
-        hadleVolumeChange: function(ev) {
-          this.$.googleYouTube.setVolume(document.querySelector('#volumeSlider').value)
         }
       });
 

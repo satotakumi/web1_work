@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Musicer - Youtube Music Player</title>
+    <!-- ComponentsStyle -->
+     <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.blue-red.min.css" />
+    <!-- Fonts -->
+    <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- CustomStyle -->
+    <link href= "./css/style.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+      <header class="mdl-layout__header player-header">
+        <div class="mdl-layout__header-row">
+          <!-- Player Buttons -->
+          <div class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
+            <i class="material-icons">skip_previous</i>
+          </div>
+          <div class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
+            <i class="material-icons">fast_rewind</i>
+          </div>
+          <div class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" for="fixed-header-drawer-exp" id="player-play">
+            <i class="material-icons">play_arrow</i>
+          </div>
+          <div class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" for="fixed-header-drawer-exp" style="display:none;"  id="player-pause">
+            <i class="material-icons">pause</i>
+          </div>
+          <div class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
+            <i class="material-icons">fast_forward</i>
+          </div>
+          <div class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
+            <i class="material-icons">skip_next</i>
+          </div>
+          <!-- end Player buttons -->
+
+          <!-- Progress Status -->
+          <div id="player-progress-wrapp">
+            <div id="player-progress-hover-container">
+              <input class="mdl-slider mdl-js-slider" id="player-progress-hover" type="range" min="0" max="100" value="1" tabindex="0"/>
+            </div>
+            <div id="player-progress-container">
+              <div class="mdl-progress mdl-js-progress progress-demo" id="player-progress"></div>
+            </div>
+          </div>
+          <!--  end Progress Status -->
+
+          <div class="mdl-layout-spacer"></div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right">
+            <label class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
+              <i class="material-icons">search</i>
+            </label>
+            <div class="mdl-textfield__expandable-holder">
+              <input class="mdl-textfield__input" type="text" name="sample" id="fixed-header-drawer-exp" value=""/>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Musicer</span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link" href="#">Favorite</a>
+          <a class="mdl-navigation__link" href="">About</a>
+        </nav>
+      </div>
+
+      <main class="mdl-layout__content">
+        <div class="page-content">
+          <table class="mdl-data-table mdl-js-data-table musics-table  mdl-data-table--selectable">
+            <thead>
+              <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mdl-data-table__cell--non-numeric">Don Aubrey</td>
+                <td>25</td>
+              </tr>
+              <tr>
+                <td class="mdl-data-table__cell--non-numeric">Sophia Carson</td>
+                <td>32</td>
+              </tr>
+              <tr>
+                <td class="mdl-data-table__cell--non-numeric">Steve Moreno</td>
+                <td>29</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </main>
+    </div>
+    <div id='youtube-player-container' style="display:none;"></div>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" ></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+    <script type="text/javascript" src="./js/jQuery.tubeplayer.min.js"></script>
+    <script type="text/javascript" src="./js/player.js"></script>
+    <script src="./components/mdl/material.min.js" charset="utf-8"></script>
+    <script>
+      document.querySelector('#player-progress').addEventListener('mdl-componentupgraded', function() {
+        this.MaterialProgress.setProgress(0);
+      });
+    </script>
+  </body>
+</html>

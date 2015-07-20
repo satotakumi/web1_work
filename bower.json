@@ -21,8 +21,14 @@
     "google-youtube": "GoogleWebComponents/google-youtube#~1.1.2",
     "iron-iconset": "PolymerElements/iron-iconset#~1.0.2",
     "iron-list": "PolymerElements/iron-list#~1.0.0",
-    "iron-ajax": "PolymerElements/iron-ajax#~1.0.2",
+    "iron-ajax": "PolymerElements/iron-ajax#~1.0.3",
     "paper-toolbar": "PolymerElements/paper-toolbar#~1.0.2",
-    "paper-item": "PolymerElements/paper-item#~1.0.2"
+    "paper-item": "PolymerElements/paper-item#~1.0.2",
+    "paper-ripple": "PolymerElements/paper-ripple#1.0.1",
+    "iron-localstorage": "PolymerElements/iron-localstorage#~1.0.4",
+    "iron-image": "PolymerElements/iron-image#~1.0.2",
+    "paper-dialog": "PolymerElements/paper-dialog#~1.0.1",
+    "neon-animation": "PolymerElements/neon-animation#~1.0.6",
+    "paper-dialog-behavior": "PolymerElements/paper-dialog-behavior#~1.0.4"
   }
 }
