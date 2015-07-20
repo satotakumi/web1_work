@@ -13,12 +13,12 @@
 <link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="bower_components/neon-animation/neon-animation.html">
 
-<link rel="import" href="animated-dropdown.html">
 
 <dom-module id="yt-player">
   <style is="custom-style">
@@ -74,6 +74,9 @@
          top 15px;
          margin: 0;
        }
+       .sp-hide{
+         display: none;
+       }
     }
   </style>
   <template>
@@ -95,18 +98,13 @@
             </paper-item-body>
             <div>
               <paper-button on-click="handleEditList" noink><iron-icon icon="icons:menu" dropdown-id="dropdown" ></iron-icon></paper-button>
-              <animated-dropdown id="dropdown" class="x-scope animated-dropdown-0">
-                <paper-menu style="width: 100px;position: fixed">
-                  <paper-item>Item 1</paper-item>
-                  <paper-item>Item 2</paper-item>
-                </paper-menu>
-              </animated-dropdown>
+
             </div>
           </paper-item>
         </template>
         <paper-item>
           <paper-input label="YouTubeID" id="addYtVideoID"></paper-input>
-          <paper-fab icon="add" on-click="addClick"></paper-fab>
+          <paper-fab icon="add" on-click="addClick" mini></paper-fab>
         </paper-item>
     </paper-material>
     <!-- Music List End -->
@@ -131,9 +129,11 @@
       </google-youtube>
       <paper-slider id="plySlider" value="{{computeProgress(currentTime, duration)}}" role="slider" tabindex="0" aria-disabled="false" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" step="0.01" class="x-scope paper-slider-0" on-change="handleSliderChange"></paper-slider>
       <div id="player-inner">
-        <paper-fab mini icon="av:play-arrow" class="orange" id="playerPlayCtl" on-click="togglePlay"></paper-fab>
+        <paper-icon-button icon="av:fast-rewind" id="playerNextCtl" on-click="prevPlay"></paper-icon-button>
+        <paper-icon-button icon="av:play-arrow" id="playerPlayCtl" on-click="togglePlay"></paper-icon-button>
+        <paper-icon-button icon="av:fast-forward" on-click="nextPlay"></paper-icon-button>
       </div>
-      <div id="playerVolumeBox">
+      <div id="playerVolumeBox" class="sp-hide">
         <iron-icon icon="av:volume-up" style="vertical-align: super;color: gray;"></iron-icon>
         <paper-slider id="volumeSlider" on-change="hadleVolumeChange"></paper-slider>
       </div>
@@ -170,6 +170,7 @@
           durationFormatted: String,
           fractionLoaded: Number,
           title: String,
+          nowPlay: Number,
           events: {
             type: Array,
             value: []
@@ -222,6 +223,12 @@
           }else{
             this.$.playerPlayCtl.icon = 'av:play-arrow'
           }
+
+          if (ev.detail.data == 0) {
+            this.nowPlay = this.nowPlay +1;
+            this.$.googleYouTube.videoId =this.musics[this.nowPlay].id;
+            this.$.googleYouTube.play()
+          }
         },
         handleYouTubeError: function(ev) {
           console.error('YouTube playback error', ev.detail);
@@ -249,9 +256,19 @@
             this.$.playerPlayCtl.icon = 'av:pause';
           }
         },
+        prevPlay: function(ev) {
+          this.nowPlay = this.nowPlay -1;
+          this.$.googleYouTube.videoId =this.musics[this.nowPlay].id;
+          this.$.googleYouTube.play()
+        },
+        nextPlay: function(ev) {
+          this.nowPlay = this.nowPlay +1;
+          this.$.googleYouTube.videoId =this.musics[this.nowPlay].id;
+          this.$.googleYouTube.play()
+        },
         listclick: function(ev) {
           this.title = ev.model.item.name;
-          console.log(ev.model)
+          this.nowPlay = ev.model.index;
           this.$.googleYouTube.videoId = ev.target.parentNode.getAttributeNode("yt-id").value;
           this.$.googleYouTube.play()
         },
