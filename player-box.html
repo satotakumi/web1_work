@@ -16,6 +16,7 @@
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="bower_components/neon-animation/neon-animation.html">
@@ -98,7 +99,7 @@
               <div>{{item.name}}</div>
             </paper-item-body>
             <div>
-              <paper-button on-click="handleEditList" noink><iron-icon icon="icons:menu" dropdown-id="dropdown" ></iron-icon></paper-button>
+              <paper-button on-click="handleDeleteList" noink><iron-icon icon="icons:clear" dropdown-id="dropdown" ></iron-icon></paper-button>
 
             </div>
           </paper-item>
@@ -130,9 +131,11 @@
       </google-youtube>
       <paper-slider id="plySlider" value="{{computeProgress(currentTime, duration)}}" role="slider" tabindex="0" aria-disabled="false" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" step="0.01" class="x-scope paper-slider-0" on-change="handleSliderChange"></paper-slider>
       <div id="player-inner">
+
         <paper-icon-button icon="av:fast-rewind" id="playerNextCtl" on-click="prevPlay"></paper-icon-button>
         <paper-icon-button icon="av:play-arrow" id="playerPlayCtl" on-click="togglePlay"></paper-icon-button>
         <paper-icon-button icon="av:fast-forward" on-click="nextPlay"></paper-icon-button>
+        <paper-icon-button icon="av:repeat" id="playerRandom" on-click="handleToggleRandom"></paper-icon-button>
       </div>
       <div id="playerVolumeBox" class="sp-hide">
         <iron-icon icon="av:volume-up" style="vertical-align: super;color: gray;"></iron-icon>
@@ -165,6 +168,7 @@
       Polymer({
         is: "yt-player",
         properties: {
+          random: Number,
           playSupported: String,
           state: String,
           currentTime: Number,
@@ -284,15 +288,20 @@
         handleSliderChange: function(ev) {
           this.$.googleYouTube.seekTo(this.$.googleYouTube.duration * (this.$.plySlider.value/100))
         },
-        handleEditList: function(ev) {
-          console.log(ev.target)
-          var dropdown = document.querySelector('#' + ev.target.getAttribute('dropdown-id'));
-          if (dropdown) {
-            dropdown.show();
-          }
+        handleDeleteList: function(ev) {
+          console.log(ev.model.index);
+          this.splice('musics', ev.model.index, 1);
         },
         hadleVolumeChange: function(ev) {
           this.$.googleYouTube.setVolume(document.querySelector('#volumeSlider').value)
+        },
+        handleToggleRandom: function(ev) {
+          console.log(this.$.playerRandom.disabled)
+          if (this.$.playerRandom.disabled) {
+            this.$.playerRandom.disabled = false;
+          }else{
+            this.$.playerRandom.disabled = true;
+          }
         }
       });
 
