@@ -5,6 +5,7 @@
 <link rel="import" href="bower_components/iron-iconset/iron-iconset.html">
 <link rel="import" href="bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="bower_components/iron-list/iron-list.html">
+<link rel="import" href="bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="bower_components/iron-image/iron-image.html">
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="bower_components/google-youtube/google-youtube.html">
@@ -16,6 +17,7 @@
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
@@ -85,9 +87,11 @@
     <paper-toolbar>
       <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
       <div class="title">{{title}}</div>
-      <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+      <paper-input id="searchInput" no-label-float="" label="検索" aria-disabled="false" style="color:white"></paper-input>
+      <paper-icon-button icon="search" on-click="searchHandler"></paper-icon-button>
     </paper-toolbar>
     <!-- Musics List -->
+    <iron-pages selected="0" id="Pages">
     <paper-material elevation="1" class="yt-ply-list">
         <template is="dom-repeat" id="menu" items="{{musics}}">
           <paper-item yt-id$="{{item.id}}" on-click="listclick">
@@ -109,6 +113,26 @@
           <paper-fab icon="add" on-click="addClick" mini></paper-fab>
         </paper-item>
     </paper-material>
+    <paper-material elevation="1" class="yt-ply-list">
+        <template is="dom-repeat" id="search_result" items="{{searchs}}">
+          <paper-item yt-id$="{{item.id}}" on-click="listclick">
+            <div class="musi-thumb">
+              <iron-image style="width:60px; height:60px;" sizing="cover" src$="{{item.thumb}}"></iron-image>
+              <!-- <iron-icon icon="warning"></iron-icon> -->
+            </div>
+            <paper-item-body two-line>
+              <div>{{item.name}}</div>
+            </paper-item-body>
+            <div>
+              <paper-button on-click="addClickVideo" noink><iron-icon icon="icons:add-circle-outline" dropdown-id="dropdown" ></iron-icon></paper-button>
+            </div>
+          </paper-item>
+        </template>
+        <paper-item onclick="document.querySelector('iron-pages').select(0)">
+          戻る
+        </paper-item>
+    </paper-material>
+    </iron-pages>
     <!-- Music List End -->
 
     <!-- Player Ctrl -->
@@ -135,7 +159,7 @@
         <paper-icon-button icon="av:fast-rewind" id="playerNextCtl" on-click="prevPlay"></paper-icon-button>
         <paper-icon-button icon="av:play-arrow" id="playerPlayCtl" on-click="togglePlay"></paper-icon-button>
         <paper-icon-button icon="av:fast-forward" on-click="nextPlay"></paper-icon-button>
-        <paper-icon-button icon="av:repeat" id="playerRandom" on-click="handleToggleRandom"></paper-icon-button>
+        <paper-icon-button icon="av:repeat" id="playerrepeat" on-click="handleTogglerepeat"></paper-icon-button>
       </div>
       <div id="playerVolumeBox" class="sp-hide">
         <iron-icon icon="av:volume-up" style="vertical-align: super;color: gray;"></iron-icon>
@@ -154,6 +178,14 @@
         handle-as="json"
         on-response="handleResponse"
         debounce-duration="300"></iron-ajax>
+
+    <iron-ajax
+        id="searchYtData"
+        url="https://www.googleapis.com/youtube/v3/search"
+        params='{"part":"snippet", "key":"AIzaSyB8OVZFyX3ZVd5HOjHu3xc1wnz6rqyemMo"}'
+        handle-as="json"
+        on-response="handleResponseSearch"
+        debounce-duration="300"></iron-ajax>
   </template>
 
   <script type="text/javascript">
@@ -167,7 +199,7 @@
       Polymer({
         is: "yt-player",
         properties: {
-          random: Number,
+          repeat: Number,
           playSupported: String,
           state: String,
           currentTime: Number,
@@ -198,6 +230,7 @@
           }
         },
         ready: function() {
+          console.log(this.$)
           if (window.localStorage.getItem('musics')) {
             this.musics = JSON.parse(window.localStorage.getItem('musics'));
           } else {
@@ -213,12 +246,30 @@
           //-------------------------
           // Loading Volume
           if (window.localStorage.getItem('volume')) {
-            console.log('Loading Volume')
             this.$.volumeSlider.value = parseInt(window.localStorage.getItem('volume'));
             this.volume = parseInt(window.localStorage.getItem('volume'));
-            console.log(this.$.volumeSlider);
           } else {
             this.volume = 50;
+          }
+
+          //-------------------------
+          // Loading repeat
+          if (window.localStorage.getItem('repeat')) {
+            this.repeat = parseInt(window.localStorage.getItem('repeat'));
+            if (this.repeat == 0) {
+              this.repeat = 0
+              this.$.playerrepeat.style.color = "gray"
+            }else if(this.repeat == 1){
+              this.repeat = 1
+              this.$.playerrepeat.icon = "av:repeat"
+              this.$.playerrepeat.style.color = "orange"
+            }else{
+              this.repeat = 2
+              this.$.playerrepeat.icon = "av:repeat-one"
+              this.$.playerrepeat.style.color = "orange"
+            }
+          } else {
+            this.repeat = 1;
           }
         },
         computeProgress: function(currentTime, duration) {
@@ -241,9 +292,31 @@
           }
 
           if (ev.detail.data == 0) {
-            this.nowPlay = this.nowPlay +1;
-            this.$.googleYouTube.videoId =this.musics[this.nowPlay].id;
-            this.$.googleYouTube.play()
+            if (this.repeat == 0) {
+              this.nowPlay = this.nowPlay +1;
+              this.$.googleYouTube.videoId =this.musics[this.nowPlay].id;
+              this.$.googleYouTube.play();
+              if (this.musics.length == this.now) {
+                this.$.googleYouTube.pause();
+              }
+            }else if(this.repeat == 1) {
+              console.log("------------------")
+              console.log(this.musics.length-1)
+              console.log(this.nowPlay)
+              if (this.musics.length-1 == this.now) {
+                console.log(this.nowPlay)
+                this.nowPlay = 0;
+              }else{
+                this.nowPlay = this.nowPlay +1;
+              }
+
+              this.$.googleYouTube.videoId =this.musics[this.nowPlay].id;
+              this.$.googleYouTube.play();
+            }else if(this.repeat == 2) {
+              this.$.googleYouTube.play();
+            }
+
+
           }
         },
         handleYouTubeError: function(ev) {
@@ -305,15 +378,56 @@
           this.$.googleYouTube.setVolume(this.volume)
           window.localStorage.setItem('volume', this.volume);
         },
-        handleToggleRandom: function(ev) {
-          console.log(this.random)
-          if (this.random) {
-            this.random = 0
-            this.$.playerRandom.style.color = "gray"
+        handleTogglerepeat: function(ev) {
+          if (this.repeat == 1) {
+            this.repeat = 0
+            this.$.playerrepeat.style.color = "gray"
+          }else if(this.repeat == 2){
+            this.repeat = 1
+            this.$.playerrepeat.icon = "av:repeat"
+            this.$.playerrepeat.style.color = "orange"
           }else{
-            this.random = 1
-            this.$.playerRandom.style.color = "black"
+            this.repeat = 2
+            this.$.playerrepeat.icon = "av:repeat-one"
+            this.$.playerrepeat.style.color = "orange"
           }
+          window.localStorage.setItem('repeat', this.repeat);
+        },
+        searchHandler: function(ev) {
+          this.$.searchYtData.params.q = this.$.searchInput.value;
+          this.$.searchYtData.generateRequest();
+          console.log(this.$.searchInput.value)
+        },
+        handleResponseSearch: function(request) {
+          this.searchs = []
+          for(video in request.detail.response.items){
+
+            var res_data = request.detail.response.items[video];
+            console.log(res_data)
+            var tmp_ary = { name: res_data.snippet.title, id: res_data.id.videoId, thumb: res_data.snippet.thumbnails.default.url };
+            this.push('searchs', tmp_ary);
+            this.$.Pages.select(1);
+          }
+          // if (request.detail.response.items.length){
+          //   console.log(request.detail.response.items[0].title);
+          //   var res_data = request.detail.response.items[0];
+          //   var tmp_ary = { name: res_data.snippet.title, id: res_data.id, thumb: res_data.snippet.thumbnails.default.url };
+          //   this.push('musics', tmp_ary);
+          //   window.localStorage.setItem('musics',JSON.stringify(this.musics));
+          // }else{
+          //   this.$.toast1.text = "Video Not Found."
+          //   this.$.toast1.show()
+          //   console.log("NOT FOUND.")
+          // }
+        },
+        addClickVideo: function(ev) {
+          console.log(ev.model.item)
+          var title = ev.model.item.name;
+          var videoId = ev.model.item.id;
+          var videoThumb = ev.model.item.thumb;
+          var tmp_ary = { name: title, id: videoId, thumb: videoThumb };
+          this.push('musics', tmp_ary);
+          window.localStorage.setItem('musics',JSON.stringify(this.musics));
         }
       });
 
