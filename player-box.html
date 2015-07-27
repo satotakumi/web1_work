@@ -139,7 +139,7 @@
       </div>
       <div id="playerVolumeBox" class="sp-hide">
         <iron-icon icon="av:volume-up" style="vertical-align: super;color: gray;"></iron-icon>
-        <paper-slider id="volumeSlider" on-change="hadleVolumeChange"></paper-slider>
+        <paper-slider id="volumeSlider" on-change="hadleVolumeChange" value="{{volume}}" aria-valuenow={{volume}}></paper-slider>
       </div>
     </div>
     <!-- Player Ctrl -->
@@ -164,7 +164,6 @@
       play_ctl_btn = document.querySelector('#player-play-ctl');
       yt_player = document.querySelector('google-youtube');
 
-
       Polymer({
         is: "yt-player",
         properties: {
@@ -177,13 +176,11 @@
           durationFormatted: String,
           fractionLoaded: Number,
           title: String,
+          volume: Number,
           nowPlay: Number,
           events: {
             type: Array,
             value: []
-          },
-          cartoon: {
-            type: Array
           }
         },
         handleResponse: function(request){
@@ -203,7 +200,7 @@
         ready: function() {
           if (window.localStorage.getItem('musics')) {
             this.musics = JSON.parse(window.localStorage.getItem('musics'));
-          }else{
+          } else {
             this.musics = [
                 { name: "Every Little Thing / 「ANATA TO」MUSIC VIDEO＋SPOT映像", id: "HQkpn0o39Vc", thumb: "http://i.ytimg.com/vi/HQkpn0o39Vc/default.jpg" },
                 { name: "Every Little Thing / 「いいかえれば」リリックビデオ", id: "UWVNlBSCC20", thumb: "http://i.ytimg.com/vi/UWVNlBSCC20/default.jpg" },
@@ -212,6 +209,16 @@
                 { name: "saqwz - Bird Go !", id: "Kd7-baNMIF8", thumb: "http://i.ytimg.com/vi/Kd7-baNMIF8/default.jpg"  },
             ];
             window.localStorage.setItem('musics',JSON.stringify(this.musics));
+          }
+          //-------------------------
+          // Loading Volume
+          if (window.localStorage.getItem('volume')) {
+            console.log('Loading Volume')
+            this.$.volumeSlider.value = parseInt(window.localStorage.getItem('volume'));
+            this.volume = parseInt(window.localStorage.getItem('volume'));
+            console.log(this.$.volumeSlider);
+          } else {
+            this.volume = 50;
           }
         },
         computeProgress: function(currentTime, duration) {
@@ -254,7 +261,7 @@
           this.$.googleYouTube.videoid = this.$.videoId.value;
         },
         handleYoutubeReady: function(ev) {
-          document.querySelector('#volumeSlider').value = this.$.googleYouTube._player.getVolume();
+          this.$.googleYouTube.setVolume(this.volume)
         },
         togglePlay: function(ev) {
           if (this.$.googleYouTube.state == 1 ){
@@ -294,14 +301,18 @@
           window.localStorage.setItem('musics',JSON.stringify(this.musics));
         },
         hadleVolumeChange: function(ev) {
-          this.$.googleYouTube.setVolume(document.querySelector('#volumeSlider').value)
+          console.log(this.volume)
+          this.$.googleYouTube.setVolume(this.volume)
+          window.localStorage.setItem('volume', this.volume);
         },
         handleToggleRandom: function(ev) {
-          console.log(this.$.playerRandom.disabled)
-          if (this.$.playerRandom.disabled) {
-            this.$.playerRandom.disabled = false;
+          console.log(this.random)
+          if (this.random) {
+            this.random = 0
+            this.$.playerRandom.style.color = "gray"
           }else{
-            this.$.playerRandom.disabled = true;
+            this.random = 1
+            this.$.playerRandom.style.color = "black"
           }
         }
       });
