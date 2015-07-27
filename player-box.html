@@ -291,6 +291,7 @@
         handleDeleteList: function(ev) {
           console.log(ev.model.index);
           this.splice('musics', ev.model.index, 1);
+          window.localStorage.setItem('musics',JSON.stringify(this.musics));
         },
         hadleVolumeChange: function(ev) {
           this.$.googleYouTube.setVolume(document.querySelector('#volumeSlider').value)
